@@ -6,14 +6,33 @@
 This guide will help you:
 
 - Install **Node.js**
-- Verify the installation
-- Run your first program called **Hello, World**
-
+- You can either follow the official installation guide at: https://nodejs.org/en/download, or use the step-by-step instructions provided later in this page.
+- After installation, verify that Node.js is installed successfully.
+- Finally, run your first program: **Hello, World**.
 Works for both **Linux** and **macOS**.
+
+# 📚 Recommended Learning — Brush Up JavaScript and Node.JS
+
+### 1️⃣ JavaScript Quick Reference  
+**Link:** https://quickref.me/javascript.html  
+
+This is a fast, compact **cheat sheet** for JavaScript. It provides quick access to commonly used syntax such as variables, loops, functions, arrays, objects, operators, and built-in methods.  
+It is useful when writing code and needing a reminder of how something works without reading long documentation.
 
 ---
 
-## 📘 Node.js Installation Manual
+### 2️⃣ Codecademy — Learn Node.js Course  
+**Link:** https://www.codecademy.com/learn/learn-node-js  
+
+This is an interactive course designed for beginners who want to learn Node.js step by step. It includes hands-on exercises, guided lessons, and small projects that explain important concepts like Node modules, asynchronous programming, file handling, npm packages, and building basic servers.
+
+---
+
+These two resources together help you learn JavaScript quickly and then apply it in Node.js through practical exercises.
+
+---
+
+# 📘 Node.js Installation Manual
 
 This manual provides step-by-step instructions to install Node.js on:
 
@@ -131,7 +150,7 @@ Node.js setup successful
 
 ---
 
-# 🧪 First Node.js Program — "Hello, World"
+# 🧪 Write First Node.js Program — "Hello, World"
 
 In this exercise, you will:
 
