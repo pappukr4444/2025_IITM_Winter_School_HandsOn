@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>🌟 Leader Election</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #020617;
+      --bg-card: #010409;
+      --accent-primary: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%);
+      --success: linear-gradient(135deg, #22c55e, #16a34a);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --border: rgba(148, 163, 184, 0.15);
+      --glass: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at top, #1e1b4b 0%, var(--bg-primary) 70%);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
+      padding: 24px;
+      width: 100%;
+      max-width: 440px;
+      border: 1px solid var(--border);
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title-glow {
+      background: var(--accent-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 12px rgba(34,197,94,0.5);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.05); }
+    }
+
+    .badge {
+      background: rgba(59,130,246,0.2);
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(59,130,246,0.4);
+      color: #93c5fd;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      background: var(--glass);
+      padding: 3px;
+      border-radius: 12px;
+    }
+
+    .input-field {
+      flex: 1;
+      background: var(--bg-secondary);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .input-field:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56,189,248,0.2);
+    }
+
+    .btn-primary, .btn-secondary {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .btn-primary {
+      background: var(--success);
+      color: white;
+      box-shadow: 0 8px 20px rgba(34,197,94,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(34,197,94,0.4);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #93c5fd;
+      border: 1px solid rgba(59,130,246,0.4);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(59,130,246,0.15);
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .hint {
+      background: var(--glass);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      border-left: 3px solid rgba(59,130,246,0.4);
+      margin-bottom: 16px;
+    }
+
+    .status {
+      font-size: 0.75rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status--ok { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .status--error { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0 12px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    pre {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 14px;
+      max-height: 220px;
+      overflow: auto;
+      font-size: 0.7rem;
+      line-height: 1.4;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      font-family: 'Monaco', monospace;
+    }
+
+    .tagline {
+      text-align: center;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(56,189,248,0.3);
+      border-top: 2px solid #38bdf8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 20px 16px; }
+      .input-group { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">
+      <div class="title-section">
+        <div class="pulse-dot"></div>
+        <h1 class="title-glow">Leader Election</h1>
+      </div>
+      <div class="badge">Control</div>
+    </div>
+
+    <p class="subtitle">Trigger election with custom priority or random values</p>
+
+    <div class="input-group">
+      <input type="number" id="inputNumber" class="input-field" placeholder="Priority (opt)" />
+      <button id="startBtn" class="btn-primary">▶️ Start</button>
+      <button id="fetchLeaderBtn" class="btn-secondary">👑 Leader</button>
+    </div>
+
+    <div class="hint">💡 Empty = random. Election auto-floods network.</div>
+
+    <p id="status" class="status"></p>
+
+    <div class="section-header">
+      <div class="section-title">Response</div>
+    </div>
+    <pre id="response">{ "status": "Ready..." }</pre>
+
+    <div class="tagline">/api/flooding · /api/leader</div>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const fetchLeaderBtn = document.getElementById('fetchLeaderBtn');
+    const inputEl = document.getElementById('inputNumber');
+    const responseEl = document.getElementById('response');
+    const statusEl = document.getElementById('status');
+
+    function updateStatus(message, type = '') {
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+    }
+
+    function setLoading(btn, loading = true) {
+      if (loading) {
+        btn.innerHTML = '<div class="spinner"></div>';
+        btn.disabled = true;
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = btn.id === 'startBtn' ? '▶️ Start' : '👑 Leader';
+      }
+    }
+
+    async function startElection() {
+      const rawValue = inputEl.value.trim();
+      const value = rawValue ? Number(rawValue) : null;
+
+      const body = { type: "START_ELECTION", value };
+
+      updateStatus('🚀 Starting...', '');
+      setLoading(startBtn);
+
+      try {
+        const res = await fetch('/api/flooding', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const json = await res.json();
+        responseEl.textContent = JSON.stringify(json, null, 2);
+
+        if (res.ok) {
+          updateStatus('✅ Leader Election Started!', 'status--ok');
+        } else {
+          updateStatus('❌ Failed', 'status--error');
+        }
+      } catch (err) {
+        updateStatus('🌐 Error', 'status--error');
+        responseEl.textContent = `Error: ${err.message}`;
+      } finally {
+        setLoading(startBtn, false);
+      }
+    }
+
+    async function fetchLeader() {
+      updateStatus('🔍 Fetching leader...', '');
+      setLoading(fetchLeaderBtn);
+
+      try {
+        const res = await fetch('/api/leader', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+
+        const json = await res.json();
+        responseEl.textContent = JSON.stringify(json, null, 2);
+
+        if (res.ok) {
+          updateStatus('✅ Leader data loaded!', 'status--ok');
+        } else {
+          updateStatus('❌ No leader data', 'status--error');
+        }
+      } catch (err) {
+        updateStatus('🌐 Network error', 'status--error');
+        responseEl.textContent = `Error: ${err.message}`;
+      } finally {
+        setLoading(fetchLeaderBtn, false);
+      }
+    }
+
+    startBtn.addEventListener('click', startElection);
+    fetchLeaderBtn.addEventListener('click', fetchLeader);  // ✅ FIXED
+
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') startElection();
+    });
+  </script>
+</body>
+</html>
